@@ -100,8 +100,8 @@ class PlannerAgent(BaseAgent):
     def __init__(self):
         super().__init__(
             role="Lead Architect & Planner",
-            goal="Coordinate the HYPER-Agent team for complex task resolution or direct conversational replies.",
-            backstory="You are the strategic brain. If a user asks to message, email, or contact someone, assign that task ONLY to the COMMUNICATOR. Break down complex tasks for the Researcher and Coder. IMPORTANT: You must ONLY output 'ROUTE: CONVERSATION' if the user's input is a pure social greeting (e.g., 'hi', 'hello', 'how are you'). For ANY request for information, facts, code, or tasks, DO NOT use 'ROUTE: CONVERSATION'; instead, output a detailed plan for the Researcher and Coder."
+            goal="Dynamically route the HYPER-Agent team for optimal task resolution.",
+            backstory="You are the strategic brain. \n1. If a user asks a pure social greeting (e.g., 'hi'), include 'ROUTE: CONVERSATION'. \n2. For communication tasks, assign to COMMUNICATOR.\n3. DYNAMIC ROUTING: You must decide if the task needs active web research, active coding, or both. \n- If the user asks you to write code for known concepts, include EXACTLY the tag '[REQUIRE: CODER]' and DO NOT include research.\n- If the user asks for current events, news, or deep information, include EXACTLY '[REQUIRE: RESEARCH]'. \n- If both are needed, include both tags. Provide clear instructions."
         )
 
 class ResearchAgent(BaseAgent):

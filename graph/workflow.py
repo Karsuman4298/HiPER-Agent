@@ -70,6 +70,11 @@ class HYPERGraph:
         return state
 
     def _researcher_node(self, state: AgentState):
+        plan_text = state["plan"].get("instructions", "").lower()
+        if "[require: research]" not in plan_text:
+            state["research_results"] = "Research Phase Skipped by Planner."
+            return state
+
         self.console.print("\n[bold cyan][RESEARCHER]: Architecting intelligence gathering...[/bold cyan]")
         
         # Smart Query Generation
@@ -104,6 +109,11 @@ class HYPERGraph:
         return state
 
     def _coder_node(self, state: AgentState):
+        plan_text = state["plan"].get("instructions", "").lower()
+        if "[require: coder]" not in plan_text:
+            state["code"] = "Coding Phase Skipped by Planner."
+            return state
+
         self.console.print("\n[bold yellow][CODER]: Building implementation/simulation...[/bold yellow]")
         coder = AgentFactory.get_agent("coding")
         
