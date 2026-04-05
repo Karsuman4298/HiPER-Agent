@@ -194,6 +194,7 @@ class HYPERGraph:
         return state
 
     def _evaluator_node(self, state: AgentState):
+        from rich.markdown import Markdown
         self.console.print("\n" + "=" * 80, style="bold magenta")
         self.console.print("[bold magenta][EVALUATOR]: Synthesizing Final Intelligence...[/bold magenta]")
         self.console.print("=" * 80 + "\n", style="bold magenta")
@@ -209,20 +210,21 @@ class HYPERGraph:
             f"COMMUNICATION LOGS: {state['communication_result']}"
         )
         
-        def stream_cb(token):
-            self._safe_print(token, style="bold white", end="")
-            
         plan_text = state["plan"].get("instructions", "").lower()
         if "route: conversation" in plan_text:
             sys_prompt = "You are a helpful conversational AI. Formulate a direct, warm conversational response to the user's greeting or simple inquiry. DO NOT mention anything about missing research or missing data."
         else:
             sys_prompt = "Synthesize a final response. If research is missing or states MISSING_DATA, inform the user you couldn't find real-time data for that specific term. DO NOT guess. Report communication results clearly if any."
+            
         evaluation = evaluator.call(
             f"USER TASK: {state['input']}. {sys_prompt}", 
             context=context, 
-            streaming_cb=stream_cb
+            streaming_cb=None
         )
-        self.console.print("\n")
+        
+        # Render the final response beautifully using Rich Markdown and Panel
+        self.console.print(Panel(Markdown(evaluation), title="HYPER-Agent Response", border_style="bold green"))
+
         state["evaluation"] = {"feedback": evaluation, "score": 1.0}
         return state
 
