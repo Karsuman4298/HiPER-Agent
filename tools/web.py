@@ -1,7 +1,7 @@
 import os
 import subprocess
 from typing import List, Dict, Any, Optional
-from duckduckgo_search import DDGS
+from ddgs import DDGS
 import pandas as pd
 from config.settings import settings
 
@@ -72,17 +72,6 @@ class ToolLayer:
             return f"Error loading dataset: {str(e)}"
 
 # Singleton tool instance
-    def query_memory(self, query: str) -> str:
-        """Search the experience database for past tasks."""
-        from memory.database import ExperienceDatabase
-        db = ExperienceDatabase()
-        results = db.get_recent_experiences(limit=5)
-        if not results:
-            return "No past experiences found in memory."
-        
-        summary = "Recent Tasks found in memory:\n"
-        for r in results:
-            summary += f"- {r['query']}: {r['result'][:200]}...\n"
-        return summary
+
 
 tools = ToolLayer()
