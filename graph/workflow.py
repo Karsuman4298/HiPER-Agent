@@ -232,7 +232,20 @@ class HYPERGraph:
         
         # Simple linear chain for "all agents working together"
         workflow.set_entry_point("planner")
-        workflow.add_edge("planner", "researcher")
+        
+        # Conditional routing from planner
+        def router(state: AgentState):
+            plan_text = state["plan"].get("instructions", "").lower()
+            if "route: conversation" in plan_text:
+                return "evaluator"
+            return "researcher"
+            
+        workflow.add_conditional_edges(
+            "planner", 
+            router,
+            {"evaluator": "evaluator", "researcher": "researcher"}
+        )
+        
         workflow.add_edge("researcher", "coder")
         workflow.add_edge("coder", "executor")
         workflow.add_edge("executor", "communicator")

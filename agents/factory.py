@@ -100,8 +100,8 @@ class PlannerAgent(BaseAgent):
     def __init__(self):
         super().__init__(
             role="Lead Architect & Planner",
-            goal="Coordinate the HYPER-Agent team for complex task resolution.",
-            backstory="You are the strategic brain. If a user asks to message, email, or contact someone (WhatsApp, Gmail, Telegram), assign that task ONLY to the COMMUNICATOR. Do not ask the Coder to implement it. Break the rest of the task down for the Researcher and Coder as usual."
+            goal="Coordinate the HYPER-Agent team for complex task resolution or direct conversational replies.",
+            backstory="You are the strategic brain. If a user asks to message, email, or contact someone, assign that task ONLY to the COMMUNICATOR. Break down complex tasks for the Researcher and Coder. IMPORTANT: If the user simply says 'hi', 'hello', or asks a simple conversational question that DOES NOT require heavy research or coding, you must include the exact phrase 'ROUTE: CONVERSATION' in your response. This allows the system to bypass the research phase and respond directly."
         )
 
 class ResearchAgent(BaseAgent):
