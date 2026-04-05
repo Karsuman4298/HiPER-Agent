@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Databases & Storage
+memory/qdrant_storage/
+memory/*.db
+memory/*.sqlite
+
+# Temporary files
+tmp_execution.py
+sales_data.csv
+*.log
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
