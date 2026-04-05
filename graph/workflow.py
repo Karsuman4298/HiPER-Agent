@@ -129,13 +129,22 @@ class HYPERGraph:
             state["execution_result"] = {"error": "No code to execute due to missing context."}
             return state
 
-        code = state["code"]
-        if "```python" in code:
-            code = code.split("```python")[1].split("```")[0]
-        elif "```" in code:
-            code = code.split("```")[1].split("```")[0]
+        code_text = state["code"]
+        executable_code = ""
         
-        execution_result = tools.python_code_execution(code)
+        if "```python" in code_text:
+            executable_code = code_text.split("```python")[1].split("```")[0]
+        elif "```bash" in code_text:
+            executable_code = "" # Bashing currently runs in python executor? Let's skip.
+        elif "```" in code_text:
+            executable_code = code_text.split("```")[1].split("```")[0]
+            
+        if not executable_code.strip():
+            state["execution_result"] = {"status": "skipped", "message": "No executable code blocks detected."}
+            self.console.print("   [dim]Logs captured (Skipped: No Code)[/dim]")
+            return state
+            
+        execution_result = tools.python_code_execution(executable_code)
         state["execution_result"] = execution_result
         self.console.print(f"   [dim]Logs captured (Exit Code: {execution_result.get('exit_code', 'N/A')})[/dim]")
         return state
