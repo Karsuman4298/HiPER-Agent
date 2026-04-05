@@ -21,12 +21,14 @@ class AgentState(TypedDict):
 
 from rich.console import Console
 from rich.panel import Panel
+from langchain.memory import ConversationBufferMemory
 
 class HYPERGraph:
     def __init__(self):
         self.db = ExperienceDatabase()
         self.vector_store = VectorMemory()
         self.console = Console()
+        self.memory = ConversationBufferMemory(return_messages=False)
         self.graph = self._build_graph()
 
     def _safe_print(self, text, style=None, end="\n"):
@@ -44,7 +46,9 @@ class HYPERGraph:
         all_history = self.db.get_recent_experiences(limit=5)
         history_context = "\n".join([f"- Task: {h['query']}\n  Result: {h['result'][:150]}..." for h in all_history])
         
-        full_input = f"CONTEXT:\n{history_context}\n\nUSER TASK: {state['input']}"
+        chat_history = self.memory.load_memory_variables({}).get("history", "")
+        
+        full_input = f"CONTEXT:\n{history_context}\n\nRECENT CHAT HISTORY:\n{chat_history}\n\nUSER TASK: {state['input']}"
         response = planner.call(full_input)
         state["plan"] = {"instructions": response}
         return state
@@ -179,7 +183,10 @@ class HYPERGraph:
         self.console.print("=" * 80 + "\n", style="bold magenta")
         evaluator = AgentFactory.get_agent("evaluator")
         
+        chat_history = self.memory.load_memory_variables({}).get("history", "")
+        
         context = (
+            f"RECENT CHAT HISTORY:\n{chat_history}\n\n"
             f"RESEARCH FINDINGS: {state['research_results']}\n\n"
             f"CODE IMPLEMENTATION: {state['code']}\n\n"
             f"EXECUTION LOGS: {state['execution_result']}\n\n"
@@ -189,7 +196,11 @@ class HYPERGraph:
         def stream_cb(token):
             self._safe_print(token, style="bold white", end="")
             
-        sys_prompt = "Synthesize a final response. If research is missing or states MISSING_DATA, inform the user you couldn't find real-time data for that specific term. DO NOT guess. Report communication results clearly if any."
+        plan_text = state["plan"].get("instructions", "").lower()
+        if "route: conversation" in plan_text:
+            sys_prompt = "You are a helpful conversational AI. Formulate a direct, warm conversational response to the user's greeting or simple inquiry. DO NOT mention anything about missing research or missing data."
+        else:
+            sys_prompt = "Synthesize a final response. If research is missing or states MISSING_DATA, inform the user you couldn't find real-time data for that specific term. DO NOT guess. Report communication results clearly if any."
         evaluation = evaluator.call(
             f"USER TASK: {state['input']}. {sys_prompt}", 
             context=context, 
@@ -268,4 +279,12 @@ class HYPERGraph:
             "current_agent": "planner",
             "messages": []
         }
-        return self.graph.invoke(initial_state)
+        result = self.graph.invoke(initial_state)
+        
+        # Save to buffer memory
+        final_response = result.get("evaluation", {}).get("feedback", "")
+        if not final_response:
+            final_response = "Execution completed without clear evaluator feedback."
+        self.memory.save_context({"input": input_text}, {"output": final_response})
+        
+        return result
