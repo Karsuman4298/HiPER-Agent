@@ -81,7 +81,8 @@ class HYPERGraph:
             f"Given the user prompt: '{state['input']}', generate 3 diverse search queries. "
             f"If the prompt contains acronyms (like VLM, RAG, etc.), include queries that specifically check for "
             f"Artificial Intelligence, Machine Learning, or Software Engineering contexts. "
-            f"Format as a comma-separated list."
+            f"CRITICAL: OUTPUT ONLY A SINGLE COMMA-SEPARATED LIST. NO PREAMBLE. NO EXPLANATION. "
+            f"EXAMPLE: mamba architecture, mamba model artificial intelligence, state space model mamba"
         )
         expanded_queries = researcher.call(query_expansion_prompt).split(",")
         
