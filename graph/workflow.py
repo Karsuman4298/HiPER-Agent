@@ -62,7 +62,14 @@ class HYPERGraph:
 
     def _researcher_node(self, state: AgentState):
         plan_text = state["plan"].get("instructions", "").lower()
-        if "[require: research]" not in plan_text:
+        user_input = state["input"].lower()
+        needs_research = (
+            "[require: research]" in plan_text or 
+            "research" in plan_text or 
+            "search" in plan_text or 
+            "paper" in user_input
+        )
+        if not needs_research:
             state["research_results"] = "Research Phase Skipped by Planner."
             return state
 
@@ -101,7 +108,15 @@ class HYPERGraph:
 
     def _coder_node(self, state: AgentState):
         plan_text = state["plan"].get("instructions", "").lower()
-        if "[require: coder]" not in plan_text:
+        user_input = state["input"].lower()
+        needs_coding = (
+            "[require: coder]" in plan_text or 
+            "code" in plan_text or 
+            "script" in user_input or 
+            "code" in user_input or 
+            "python" in user_input
+        )
+        if not needs_coding:
             state["code"] = "Coding Phase Skipped by Planner."
             return state
 
