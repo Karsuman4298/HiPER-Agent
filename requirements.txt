@@ -7,8 +7,7 @@ langchain-google-genai
 langgraph
 ollama
 typer
-qdrant-client
-duckduckgo-search
+ddgs
 rich
 pydantic
 pydantic-settings
