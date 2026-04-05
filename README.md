@@ -24,7 +24,6 @@ HiPER-Agent utilizes **LangGraph** to manage a deterministic yet flexible state 
 | **Coder / Executor** | Systems engineer; translates research findings into executable Python/Bash logic and simulates code safely. |
 | **Data Analyst** | Quantitative expert; parses complex datasets and identifies statistical patterns. |
 | **Evaluator** | Quality gatekeeper; rigorously synthesizes final responses and ensures premium, GPT-style streaming output. |
-| **Improver** | Self-learning node; distills the task experience into a "Lesson Learned" and archives it for future reference. |
 
 ---
 
@@ -33,9 +32,7 @@ HiPER-Agent is built on modern, robust Python technologies:
 - **Core Orchestration**: `LangChain`, `LangGraph` for stateful agent workflows.
 - **Inference Providers**: Native integrations for `Groq API`, `Google AI Studio (Gemini)`, `OpenAI`, `Anthropic`, and `Ollama`.
 - **Search & Tools**: Modern `DuckDuckGo Search (DDGS)` for real-time web intelligence.
-- **Memory Layers**: 
-  - **Vector Storage**: `Qdrant` for semantic similarity and long-term knowledge retrieval.
-  - **Relational Storage**: `SQLite` for tracking past experiences, success scores, and historical strategy.
+- **Memory Layers**: `ConversationBufferMemory` ensures persistent contextual awareness during interactive terminal sessions.
 - **UI & Interface**: `Rich` for a beautiful, distinct, and color-coded Windows-compatible terminal UI; `Typer` for rapid, modular CLI commands.
 - **Configuration**: `Pydantic-Settings` for type-safe environment variable management.
 
@@ -92,9 +89,6 @@ python main.py code "Create a script that fetches the current weather using a pu
 
 # Data Analysis
 python main.py analyze "sales_data.csv"
-
-# View Strategic Experience Memory
-python main.py history --limit 5
 ```
 
 ---

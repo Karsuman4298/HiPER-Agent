@@ -3,8 +3,6 @@ from langgraph.graph import StateGraph, END
 from agents.factory import AgentFactory
 from tools.web import tools
 from tools.plugins import plugins
-from memory.database import ExperienceDatabase
-from memory.vector import VectorMemory
 
 # Define the state for the graph
 class AgentState(TypedDict):
@@ -15,7 +13,6 @@ class AgentState(TypedDict):
     execution_result: Dict[str, Any]
     communication_result: str
     evaluation: Dict[str, Any]
-    improvement_strategy: str
     current_agent: str
     messages: List[Dict[str, str]]
 
@@ -24,6 +21,7 @@ from rich.panel import Panel
 
 class SimpleBufferMemory:
     """A lightweight, dependency-free equivalent to LangChain's ConversationBufferMemory."""
+
     def __init__(self):
         self.history = []
         
@@ -41,8 +39,6 @@ class SimpleBufferMemory:
 
 class HYPERGraph:
     def __init__(self):
-        self.db = ExperienceDatabase()
-        self.vector_store = VectorMemory()
         self.console = Console()
         self.memory = SimpleBufferMemory()
         self.graph = self._build_graph()
@@ -59,12 +55,9 @@ class HYPERGraph:
         self.console.print("\n[bold purple][PLANNER]: Orchestrating team strategy...[/bold purple]")
         planner = AgentFactory.get_agent("planner")
         
-        all_history = self.db.get_recent_experiences(limit=5)
-        history_context = "\n".join([f"- Task: {h['query']}\n  Result: {h['result'][:150]}..." for h in all_history])
-        
         chat_history = self.memory.load_memory_variables({}).get("history", "")
         
-        full_input = f"CONTEXT:\n{history_context}\n\nRECENT CHAT HISTORY:\n{chat_history}\n\nUSER TASK: {state['input']}"
+        full_input = f"RECENT CHAT HISTORY:\n{chat_history}\n\nUSER TASK: {state['input']}"
         response = planner.call(full_input)
         state["plan"] = {"instructions": response}
         return state
@@ -247,24 +240,6 @@ class HYPERGraph:
         state["evaluation"] = {"feedback": evaluation, "score": 1.0}
         return state
 
-    def _improvement_node(self, state: AgentState):
-        self.console.print("\n[bold blue][IMPROVER]: Archiving Experience...[/bold blue]", end=" ")
-        improver = AgentFactory.get_agent("improvement")
-        context = f"Task: {state['input']}\nFinal Result summary: {state['evaluation']['feedback'][:100]}"
-        strategy = improver.call("Distill this run into a single sentence strategy.", context=context)
-        state["improvement_strategy"] = strategy
-        
-        self.db.add_experience(
-            task_type="full_team_collaboration",
-            query=state["input"],
-            plan=state["plan"],
-            result=state["evaluation"]["feedback"],
-            score=1.0,
-            feedback="Full team collaboration complete.",
-            strategy=strategy
-        )
-        return state
-
     def _build_graph(self):
         from langgraph.graph import StateGraph, END
         workflow = StateGraph(AgentState)
@@ -276,7 +251,6 @@ class HYPERGraph:
         workflow.add_node("executor", self._executor_node)
         workflow.add_node("communicator", self._communicator_node)
         workflow.add_node("evaluator", self._evaluator_node)
-        workflow.add_node("improvement", self._improvement_node)
         
         # Simple linear chain for "all agents working together"
         workflow.set_entry_point("planner")
@@ -298,8 +272,7 @@ class HYPERGraph:
         workflow.add_edge("coder", "executor")
         workflow.add_edge("executor", "communicator")
         workflow.add_edge("communicator", "evaluator")
-        workflow.add_edge("evaluator", "improvement")
-        workflow.add_edge("improvement", END)
+        workflow.add_edge("evaluator", END)
         
         return workflow.compile()
 
@@ -312,7 +285,6 @@ class HYPERGraph:
             "execution_result": {},
             "communication_result": "",
             "evaluation": {},
-            "improvement_strategy": "",
             "current_agent": "planner",
             "messages": []
         }

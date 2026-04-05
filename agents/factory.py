@@ -144,14 +144,6 @@ class EvaluatorAgent(BaseAgent):
             backstory="You are the final reviewer. You synthesize Researcher findings and Coder implementations into a single, cohesive response. You ensure the final output is streamed word-by-word with absolute clarity. If the results are poor, you can request a REVISION."
         )
 
-class ImprovementAgent(BaseAgent):
-    def __init__(self):
-        super().__init__(
-            role="Self-Learning Optimizer",
-            goal="Distill task experiences into long-term semantic strategies.",
-            backstory="You analyze the whole team's performance and synthesize a 'Lesson Learned' for future tasks. This ensures the system evolves over time."
-        )
-
 class CommunicatorAgent(BaseAgent):
     def __init__(self):
         super().__init__(
@@ -170,7 +162,6 @@ class AgentFactory:
             "data": DataAgent,
             "executor": ExecutorAgent,
             "evaluator": EvaluatorAgent,
-            "improvement": ImprovementAgent,
             "communicator": CommunicatorAgent
         }
         return agents[role.lower()]()

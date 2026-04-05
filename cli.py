@@ -100,21 +100,5 @@ def analyze(dataset: str):
     """Analyze a dataset."""
     run(f"Analyze this dataset: {dataset}")
 
-@app.command()
-def history(limit: int = 5):
-    """View recent task history and agent evaluations."""
-    console.print(Panel(f"Recent {limit} Experiences", title="HYPER-Agent Memory"))
-    history_data = graph.db.get_recent_experiences(limit=limit)
-    
-    if not history_data:
-        console.print("[yellow]No history found yet.[/yellow]")
-        return
-        
-    for exp in history_data:
-        console.print(f"\n[bold cyan]Task:[/bold cyan] {exp['query']}")
-        console.print(f"[bold green]Score:[/bold green] {exp['evaluation_score']}")
-        console.print(f"[bold blue]Strategy Used:[/bold blue] {exp['strategy_used']}")
-        console.print("-" * 20)
-
 if __name__ == "__main__":
     app()
