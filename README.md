@@ -69,10 +69,19 @@ GOOGLE_API_KEY=your_google_key_here
 ```
 
 ### 4. Usage Commands
-Interact with HiPER-Agent securely via the terminal:
+Interact with HiPER-Agent securely via the terminal.
+
+**Interactive Chat Mode (Recommended)**
+Simply run the main script to enter a continuous, interactive chat loop. Press `Ctrl+C` to exit.
+```powershell
+python main.py
+```
+
+**Single-Shot Commands**
+Alternatively, execute isolated tasks directly from the CLI:
 
 ```powershell
-# Standard Research & Code Execution (Unified Command)
+# Unified task execution
 python main.py run "Research the impact of quantum computing on cryptography"
 
 # Specialized Research Task

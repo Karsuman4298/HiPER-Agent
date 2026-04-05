@@ -9,6 +9,20 @@ app = typer.Typer(name=settings.APP_NAME)
 console = Console()
 graph = HYPERGraph()
 
+@app.callback(invoke_without_command=True)
+def main_callback(ctx: typer.Context):
+    """Start an interactive chat session if no command is passed."""
+    if ctx.invoked_subcommand is None:
+        console.print(Panel("[bold cyan]Welcome to HiPER-Agent Interactive Mode![/bold cyan]\nType your prompt and press Enter. Press [bold red]Ctrl+C[/bold red] to exit.", title="HiPER-Agent", border_style="bold blue"))
+        try:
+            while True:
+                prompt = console.input("\n[bold green]You >[/bold green] ")
+                if prompt.strip():
+                    run(prompt)
+        except KeyboardInterrupt:
+            console.print("\n[bold red]Exiting HiPER-Agent. Goodbye![/bold red]")
+
+
 @app.command()
 def add_contact(name: str, target: str):
     """Add a name-to-contact mapping (phone/email)."""
