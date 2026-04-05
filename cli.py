@@ -70,7 +70,6 @@ def run(prompt: str):
     try:
         # The graph nodes now print their status and stream their outputs directly to the console
         result = graph.run(prompt)
-        console.print("\n[bold green]System Run Complete.[/bold green]")
     except Exception as e:
         error_msg = str(e)
         if "429" in error_msg or "rate_limit" in error_msg.lower():
