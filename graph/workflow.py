@@ -2,7 +2,6 @@ from typing import TypedDict, Annotated, List, Dict, Any, Union
 from langgraph.graph import StateGraph, END
 from agents.factory import AgentFactory
 from tools.web import tools
-from tools.plugins import plugins
 
 # Define the state for the graph
 class AgentState(TypedDict):
@@ -11,7 +10,6 @@ class AgentState(TypedDict):
     research_results: str
     code: str
     execution_result: Dict[str, Any]
-    communication_result: str
     evaluation: Dict[str, Any]
     current_agent: str
     messages: List[Dict[str, str]]
@@ -152,59 +150,6 @@ class HYPERGraph:
         self.console.print(f"   [dim]Logs captured (Exit Code: {execution_result.get('exit_code', 'N/A')})[/dim]")
         return state
 
-    def _communicator_node(self, state: AgentState):
-        lower_input = state["input"].lower()
-        if not any(key in lower_input for key in ["whatsapp", "email", "gmail", "telegram"]):
-            state["communication_result"] = "No communication requested."
-            return state
-            
-        self.console.print("\n[bold cyan][COMMUNICATOR]: Executing cross-platform task...[/bold cyan]")
-        comm = AgentFactory.get_agent("communicator")
-        
-        # Decide which tool to use
-        decision_prompt = (
-            f"User request: '{state['input']}'. "
-            f"You MUST extract the target (phone number or email) and the service (WhatsApp, Email, or Telegram). "
-            f"If the target is a name, just return the name. "
-            f"RETURN ONLY the formatted string 'SERVICE|TARGET|MESSAGE' and NOTHING ELSE. No preamble, no explanation. "
-            f"Example: 'WhatsApp|John|Hello!'"
-        )
-        decision = comm.call(decision_prompt)
-        
-        try:
-            parts = decision.split("|")
-            if len(parts) < 2:
-                state["communication_result"] = f"Error: Could not parse target from '{decision}'."
-                return state
-                
-            service = parts[0].strip().capitalize()
-            target_name = parts[1].strip() if len(parts) > 1 else "Unknown"
-            msg = parts[2].strip() if len(parts) > 2 else state["input"]
-            
-            # Resolve name to actual target (if applicable)
-            target = plugins.resolve_contact(target_name)
-            if target_name != target:
-                self._safe_print(f"   [dim]Resolved {target_name} -> {target}[/dim]")
-            
-            if "Whatsapp" in service:
-                state["communication_result"] = plugins.send_whatsapp(target, msg)
-            elif "Email" in service or "Gmail" in service:
-                if "check" in lower_input or "read" in lower_input:
-                    state["communication_result"] = plugins.check_emails()
-                else:
-                    state["communication_result"] = plugins.send_email(target, "Notification from HYPER-Agent", msg)
-            elif "Telegram" in service:
-                state["communication_result"] = plugins.send_telegram(target, msg)
-            elif "Twitter" in service or "Tweet" in service:
-                state["communication_result"] = plugins.send_tweet(msg)
-            else:
-                state["communication_result"] = f"Unknown service: {service}"
-        except Exception as e:
-            state["communication_result"] = f"Error in communicator: {str(e)}"
-        
-        self.console.print(f"   [dim]Result: {state['communication_result']}[/dim]")
-        return state
-
     def _evaluator_node(self, state: AgentState):
         from rich.markdown import Markdown
         self.console.print("\n" + "=" * 80, style="bold magenta")
@@ -218,8 +163,7 @@ class HYPERGraph:
             f"RECENT CHAT HISTORY:\n{chat_history}\n\n"
             f"RESEARCH FINDINGS: {state['research_results']}\n\n"
             f"CODE IMPLEMENTATION: {state['code']}\n\n"
-            f"EXECUTION LOGS: {state['execution_result']}\n\n"
-            f"COMMUNICATION LOGS: {state['communication_result']}"
+            f"EXECUTION LOGS: {state['execution_result']}"
         )
         
         plan_text = state["plan"].get("instructions", "").lower()
@@ -249,7 +193,6 @@ class HYPERGraph:
         workflow.add_node("researcher", self._researcher_node)
         workflow.add_node("coder", self._coder_node)
         workflow.add_node("executor", self._executor_node)
-        workflow.add_node("communicator", self._communicator_node)
         workflow.add_node("evaluator", self._evaluator_node)
         
         # Simple linear chain for "all agents working together"
@@ -270,8 +213,7 @@ class HYPERGraph:
         
         workflow.add_edge("researcher", "coder")
         workflow.add_edge("coder", "executor")
-        workflow.add_edge("executor", "communicator")
-        workflow.add_edge("communicator", "evaluator")
+        workflow.add_edge("executor", "evaluator")
         workflow.add_edge("evaluator", END)
         
         return workflow.compile()
@@ -283,7 +225,6 @@ class HYPERGraph:
             "research_results": "",
             "code": "",
             "execution_result": {},
-            "communication_result": "",
             "evaluation": {},
             "current_agent": "planner",
             "messages": []

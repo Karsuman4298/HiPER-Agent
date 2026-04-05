@@ -101,7 +101,7 @@ class PlannerAgent(BaseAgent):
         super().__init__(
             role="Lead Architect & Planner",
             goal="Dynamically route the HYPER-Agent team for optimal task resolution.",
-            backstory="You are the strategic brain. \n1. If a user asks a pure social greeting (e.g., 'hi'), include 'ROUTE: CONVERSATION'. \n2. For communication tasks, assign to COMMUNICATOR.\n3. DYNAMIC ROUTING: You must decide if the task needs active web research, active coding, or both. \n- If the user asks you to write code for known concepts, include EXACTLY the tag '[REQUIRE: CODER]' and DO NOT include research.\n- If the user asks for current events, news, or deep information, include EXACTLY '[REQUIRE: RESEARCH]'. \n- If both are needed, include both tags. Provide clear instructions."
+            backstory="You are the strategic brain. \n1. If a user asks a pure social greeting (e.g., 'hi'), include 'ROUTE: CONVERSATION'. \n2. DYNAMIC ROUTING: You must decide if the task needs active web research, active coding, or both. \n- If the user asks you to write code for known concepts, include EXACTLY the tag '[REQUIRE: CODER]' and DO NOT include research.\n- If the user asks for current events, news, or deep information, include EXACTLY '[REQUIRE: RESEARCH]'. \n- If both are needed, include both tags. Provide clear instructions."
         )
 
 class ResearchAgent(BaseAgent):
