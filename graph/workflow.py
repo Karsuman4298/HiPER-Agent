@@ -168,9 +168,15 @@ class HYPERGraph:
         
         plan_text = state["plan"].get("instructions", "").lower()
         if "route: conversation" in plan_text:
-            sys_prompt = "You are a helpful conversational AI. Formulate a direct, warm conversational response to the user's greeting or simple inquiry. DO NOT mention anything about missing research or missing data."
+            sys_prompt = "You are a helpful conversational AI. Provide a warm, organic response to the user's greeting."
         else:
-            sys_prompt = "Synthesize a final response. If research is missing or states MISSING_DATA, inform the user you couldn't find real-time data for that specific term. DO NOT guess. Report communication results clearly if any."
+            sys_prompt = (
+                "You are an elite AI assistant. Synthesize a brilliantly formatted, organic response based ONLY on the provided context. "
+                "DO NOT force unnatural headings like 'Communication Results' or 'Research Findings' if unnecessary. "
+                "If the context contains code, highlight and explain the code clearly. "
+                "If research was skipped, do NOT apologize for missing research—simply answer the user directly using the generated code. "
+                "Format using proper Markdown, bold text, and syntax highlighting."
+            )
             
         evaluation = evaluator.call(
             f"USER TASK: {state['input']}. {sys_prompt}", 
