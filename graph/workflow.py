@@ -21,14 +21,30 @@ class AgentState(TypedDict):
 
 from rich.console import Console
 from rich.panel import Panel
-from langchain.memory import ConversationBufferMemory
+
+class SimpleBufferMemory:
+    """A lightweight, dependency-free equivalent to LangChain's ConversationBufferMemory."""
+    def __init__(self):
+        self.history = []
+        
+    def save_context(self, inputs: dict, outputs: dict):
+        user_input = inputs.get("input", "")
+        ai_output = outputs.get("output", "")
+        if user_input: self.history.append(f"Human: {user_input}")
+        if ai_output: self.history.append(f"AI: {ai_output}")
+        # Keep last 10 messages to prevent context overflow
+        if len(self.history) > 10:
+            self.history = self.history[-10:]
+            
+    def load_memory_variables(self, kwargs: dict) -> dict:
+        return {"history": "\n".join(self.history)}
 
 class HYPERGraph:
     def __init__(self):
         self.db = ExperienceDatabase()
         self.vector_store = VectorMemory()
         self.console = Console()
-        self.memory = ConversationBufferMemory(return_messages=False)
+        self.memory = SimpleBufferMemory()
         self.graph = self._build_graph()
 
     def _safe_print(self, text, style=None, end="\n"):
