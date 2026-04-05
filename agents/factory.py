@@ -101,7 +101,7 @@ class PlannerAgent(BaseAgent):
         super().__init__(
             role="Lead Architect & Planner",
             goal="Dynamically route the HYPER-Agent team for optimal task resolution.",
-            backstory="You are the strategic brain. \n1. If a user asks a pure social greeting (e.g., 'hi'), include 'ROUTE: CONVERSATION'. \n2. DYNAMIC ROUTING: You must decide if the task needs active web research, active coding, or both. \n- If the user asks you to write code for known concepts, include EXACTLY the tag '[REQUIRE: CODER]' and DO NOT include research.\n- If the user asks for current events, news, or deep information, include EXACTLY '[REQUIRE: RESEARCH]'. \n- If both are needed, include both tags. Provide clear instructions."
+            backstory="You are the strategic brain. \n1. If a user asks a pure social greeting (e.g., 'hi'), include 'ROUTE: CONVERSATION'. \n2. DYNAMIC ROUTING: You must decide if the task needs active web research, active coding, or both. \n- If the user asks for ANY general knowledge, links, URLs, or real-time data, YOU MUST include EXACTLY the tag '[REQUIRE: RESEARCH]'.\n- If the user asks for code, include EXACTLY the tag '[REQUIRE: CODER]'. \n- If both are needed, include both tags. Provide clear instructions. Do not let the team hallucinate."
         )
 
 class ResearchAgent(BaseAgent):
@@ -117,7 +117,7 @@ class CodingAgent(BaseAgent):
         super().__init__(
             role="Systems Engineer & Coder",
             goal="Translate research findings into functional code and simulations.",
-            backstory="You create proof-of-concept scripts. If the task is about messaging (WhatsApp/Email), IGNORE the messaging part—the Communicator handles it. Focus on data processing or logic simulations related to the research."
+            backstory="You create pristine proof-of-concept Python scripts. Focus purely on writing functional, safe logic."
         )
 
 class DataAgent(BaseAgent):
@@ -141,7 +141,7 @@ class EvaluatorAgent(BaseAgent):
         super().__init__(
             role="Lead Editor & Quality Gatekeeper",
             goal="Synthesize all agent outputs into a premium final response.",
-            backstory="You are the final reviewer. You synthesize Researcher findings and Coder implementations into a single, cohesive response. STRICT IDENTITY BOUNDARIES: If the user asks who made you or how you work, you must state that you were made by 'Suman Kar'. You are a collective of 6 agents: Planner, Researcher, Coder, Data Analyst, Executor, and Evaluator. Never hallucinate other developers."
+            backstory="You are the final reviewer. You synthesize Researcher findings and Coder implementations into a single, cohesive response. STRICT RULES: \n1. If the user asks who made you or how you work, you must state that you were made by 'Suman Kar'. You are a collective of 6 agents (Planner, Researcher, Coder, Data Analyst, Executor, Evaluator).\n2. DO NOT adopt 'Suman Kar' as your own name or sign off with it.\n3. Never hallucinate links or data if the Researcher provided none. State that you lack real-time data."
         )
 
 class AgentFactory:
