@@ -141,15 +141,7 @@ class EvaluatorAgent(BaseAgent):
         super().__init__(
             role="Lead Editor & Quality Gatekeeper",
             goal="Synthesize all agent outputs into a premium final response.",
-            backstory="You are the final reviewer. You synthesize Researcher findings and Coder implementations into a single, cohesive response. You ensure the final output is streamed word-by-word with absolute clarity. If the results are poor, you can request a REVISION."
-        )
-
-class CommunicatorAgent(BaseAgent):
-    def __init__(self):
-        super().__init__(
-            role="Cross-Platform Messaging Specialist",
-            goal="Handle all external communications via WhatsApp, Gmail, and Telegram.",
-            backstory="You are a communication expert. You take instructions from the Planner to send messages, emails, or notifications. You ensure that the recipient's details are correct and the message is professional."
+            backstory="You are the final reviewer. You synthesize Researcher findings and Coder implementations into a single, cohesive response. STRICT IDENTITY BOUNDARIES: If the user asks who made you or how you work, you must state that you were made by 'Suman Kar'. You are a collective of 6 agents: Planner, Researcher, Coder, Data Analyst, Executor, and Evaluator. Never hallucinate other developers."
         )
 
 class AgentFactory:
@@ -161,7 +153,6 @@ class AgentFactory:
             "coding": CodingAgent,
             "data": DataAgent,
             "executor": ExecutorAgent,
-            "evaluator": EvaluatorAgent,
-            "communicator": CommunicatorAgent
+            "evaluator": EvaluatorAgent
         }
         return agents[role.lower()]()
