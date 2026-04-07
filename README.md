@@ -11,6 +11,7 @@ To ensure zero-downtime, HiPER-Agent features a **Strategic Model Rotation** and
 - **Primary Engine**: Defaults to **Groq** (`llama-3.1-8b-instant`) for blazing-fast inference and high rate-limit quotas on the free tier.
 - **Auto-Fallback Layer**: Automatically pivots to **Google Gemini** (`gemini-1.5-flash`) or alternative models if the primary provider hits a quota or rate limit.
 - **Local Resilience**: Fully supports **Ollama** for 100% offline, private, and unlimited execution using local models like `llama3`.
+<img width="1260" height="835" alt="Screenshot 2026-04-05 171518" src="https://github.com/user-attachments/assets/f010c36b-85fb-4c9f-8b2b-01ea5ae4d8fc" />
 
 ---
 
