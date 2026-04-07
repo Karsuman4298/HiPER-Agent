@@ -13,7 +13,9 @@ To ensure zero-downtime, HiPER-Agent features a **Strategic Model Rotation** and
 - **Local Resilience**: Fully supports **Ollama** for 100% offline, private, and unlimited execution using local models like `llama3`.
 <img width="1260" height="835" alt="Screenshot 2026-04-05 171518" src="https://github.com/user-attachments/assets/f010c36b-85fb-4c9f-8b2b-01ea5ae4d8fc" />
 
----
+---<img width="1273" height="559" alt="Screenshot 2026-04-05 164253" src="https://github.com/user-attachments/assets/9e79289c-2926-4ef8-a2e7-b05e071328a7" />
+<img width="1246" height="848" alt="Screenshot 2026-04-05 164030" src="https://github.com/user-attachments/assets/bf0c59d6-fb9d-4acf-8874-76c4bd5d501e" />
+
 
 ## 🧠 The Multi-Agent Teaming Framework
 HiPER-Agent utilizes **LangGraph** to manage a deterministic yet flexible state machine between specialized nodes. Rather than a single monolithic prompt, tasks are routed through experts:
